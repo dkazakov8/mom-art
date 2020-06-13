@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import ReactMarkdown from 'react-markdown';
 
 import { Icon } from 'components/Icon';
@@ -9,6 +10,7 @@ import { StoreContext } from 'stores/StoreRoot';
 import styles from './About.scss';
 import { messages } from './messages';
 
+@observer
 export class About extends React.Component {
   declare context: React.ContextType<typeof StoreContext>;
   static contextType = StoreContext;

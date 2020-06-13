@@ -15,10 +15,7 @@ export function deleteImageController({ req }) {
         suffix => removedImageData.sources[suffix].src
       );
       removedFiles = removedFiles.map(src =>
-        src.replace(
-          `${env.YANDEX_STORAGE_ENDPOINT}/${env.YANDEX_STORAGE_BUCKET_PREFIX}${env.YANDEX_STORAGE_BUCKET}/`,
-          ''
-        )
+        src.replace(`${env.CDN_ENDPOINT}/${env.CDN_BUCKET_PREFIX}${env.CDN_BUCKET}/`, '')
       );
 
       return Promise.resolve()
@@ -26,7 +23,7 @@ export function deleteImageController({ req }) {
           Promise.all(
             removedFiles.map(fileName =>
               removeFromBucket({
-                Bucket: `${env.YANDEX_STORAGE_BUCKET_PREFIX}${env.YANDEX_STORAGE_BUCKET}`,
+                Bucket: `${env.CDN_BUCKET_PREFIX}${env.CDN_BUCKET}`,
                 fileName,
               })
             )

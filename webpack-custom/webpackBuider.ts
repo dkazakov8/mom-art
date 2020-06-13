@@ -1,16 +1,43 @@
-import fs from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
 
+import watch from 'node-watch';
+// @ts-ignore
+import { run } from 'parallel-webpack';
+
 import { env } from '../env';
-import { run } from '../lib/parallel-webpack';
 import { paths } from '../paths';
-import { createCDNBucket } from '../server/serverUtils/s3';
-import { deleteRecursive } from '../server/serverUtils/deleteRecursive';
+import { clearFolder } from '../server/serverUtils/clearFolder';
 
 import { generateFiles } from './utils/generateFiles';
 
+function startFileWatcher() {
+  let changedFiles = [];
+  let isGenerating = false;
+  let watchDebounceTimeout = null;
+
+  watch(paths.sourcePath, { recursive: true }, function fileChanged(event, filePath) {
+    if (filePath) changedFiles.push(filePath);
+
+    if (isGenerating) return false;
+
+    clearTimeout(watchDebounceTimeout);
+    watchDebounceTimeout = setTimeout(() => {
+      isGenerating = true;
+
+      generateFiles.process({ changedFiles }).then(() => {
+        isGenerating = false;
+
+        if (changedFiles.length > 0) fileChanged(null, null);
+      });
+
+      changedFiles = [];
+    }, 10);
+  });
+}
+
 function afterFirstBuild() {
+  startFileWatcher();
   /**
    * Start server & proxy it's stdout/stderr to current console
    *
@@ -45,27 +72,18 @@ function afterFirstBuild() {
  *
  */
 
+const parallelOptions = {
+  stats: true,
+  watch: env.HOT_RELOAD,
+  colors: true,
+  maxRetries: 1,
+  maxConcurrentWorkers: 2,
+};
+
 Promise.resolve()
-  .then(() =>
-    env.YANDEX_STORAGE_ENABLED
-      ? createCDNBucket({ bucketName: `${env.YANDEX_STORAGE_BUCKET_PREFIX}${env.GIT_COMMIT}` })
-      : Promise.resolve()
-  )
-  .then(() => deleteRecursive(paths.buildPath))
-  .then(() => fs.promises.mkdir(paths.buildPath))
+  .then(() => clearFolder(paths.buildPath))
   .then(() => generateFiles.process({}))
   .then(() =>
-    run(
-      path.resolve(__dirname, 'webpackParallel.config.ts'),
-      {
-        stats: true,
-        watch: env.START_SERVER_AFTER_BUILD,
-        colors: true,
-        maxRetries: 1,
-        maxConcurrentWorkers: 2,
-        beforeRebuild: generateFiles.process.bind(generateFiles),
-      },
-      afterFirstBuild
-    )
+    run(path.resolve(__dirname, 'webpackParallel.config.ts'), parallelOptions, afterFirstBuild)
   )
   .catch(console.error);

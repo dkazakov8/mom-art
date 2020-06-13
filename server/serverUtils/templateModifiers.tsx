@@ -4,10 +4,9 @@ import React from 'react';
 import { App } from 'components/App';
 import { escapeAllStrings } from 'utils';
 import { StoreContext } from 'stores/StoreRoot';
+import { hotReloadUrl, compressions } from 'const';
 
 import { env } from '../../env';
-
-import { hotReloadUrl } from './hotReloadUrl';
 
 const isReactMode = env.REACT_LIBRARY === 'react';
 
@@ -29,35 +28,16 @@ function filterStore(store) {
 }
 
 export function injectCompressed(req, str) {
-  const compressions = [
-    {
-      encoding: 'br',
-      extension: 'br',
-    },
-    {
-      encoding: 'gzip',
-      extension: 'gz',
-    },
-  ];
-
   const acceptedEncodings = req.acceptsEncodings();
-
   const acceptedCompression = env.GENERATE_COMPRESSED
-    ? compressions.find(({ encoding }) => acceptedEncodings.indexOf(encoding) !== -1)
+    ? compressions.find(({ encoding }) => acceptedEncodings.includes(encoding))
     : null;
 
-  if (!acceptedCompression) return str;
-
-  let scriptsStr = str.slice(str.indexOf('<body>'));
-  scriptsStr = scriptsStr.slice(scriptsStr.indexOf('<script'));
-  scriptsStr = scriptsStr.substr(0, scriptsStr.indexOf('</body>'));
-
-  let stylesStr = str.slice(str.indexOf('<link'));
-  stylesStr = stylesStr.substr(0, stylesStr.indexOf('>'));
-
-  return str
-    .replace(scriptsStr, scriptsStr.replace(/\.js/g, `.js.${acceptedCompression.extension}`))
-    .replace(stylesStr, stylesStr.replace(/\.css/g, `.css.${acceptedCompression.extension}`));
+  return !acceptedCompression
+    ? str
+    : str
+        .replace(/\.js/g, `.js.${acceptedCompression.extension}`)
+        .replace(/\.css/g, `.css.${acceptedCompression.extension}`);
 }
 
 export function injectMetaTags(str, store) {

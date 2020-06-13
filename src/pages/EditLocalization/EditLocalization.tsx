@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 
 import { fieldValidators } from 'utils';
 import { Header } from 'components/Header';
@@ -15,6 +16,7 @@ interface TranslationItemProps {
   translationName: string;
 }
 
+@observer
 class TranslationItem extends React.Component<TranslationItemProps> {
   declare context: React.ContextType<typeof StoreContext>;
   static contextType = StoreContext;
@@ -42,6 +44,7 @@ class TranslationItem extends React.Component<TranslationItemProps> {
   }
 }
 
+@observer
 export class EditLocalization extends React.Component {
   declare context: React.ContextType<typeof StoreContext>;
   static contextType = StoreContext;

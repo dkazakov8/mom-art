@@ -2,14 +2,13 @@ import fs from 'fs';
 import path from 'path';
 
 import _ from 'lodash';
-import ts from 'typescript';
 import chalk from 'chalk';
-// @ts-ignore
 import { ESLint } from 'eslint';
 
-import { Compiler } from '../../lib/ts-interface-builder';
-import { paths } from '../../paths';
 import { env } from '../../env';
+import { paths } from '../../paths';
+import eslintConfig from '../../eslint.config';
+import { Compiler } from '../../lib/ts-interface-builder';
 
 const eslint = new ESLint({
   fix: true,
@@ -17,291 +16,274 @@ const eslint = new ESLint({
   overrideConfigFile: path.resolve(paths.rootPath, 'eslint.config.js'),
 });
 
-const logsPrefix = '[GenerateFiles]';
+const logsPrefix = chalk.blue(`[WEBPACK]`);
 
 const modelsPath = path.resolve(paths.sourcePath, 'models');
-const pathsForGenerateValidationFiles = [path.resolve(paths.sourcePath, 'api')];
-const pathsForgenerateExportFiles = [
-  path.resolve(paths.sourcePath, 'api'),
-  path.resolve(paths.sourcePath, 'const'),
-  path.resolve(paths.sourcePath, 'utils'),
-  path.resolve(paths.sourcePath, 'pages'),
-  path.resolve(paths.sourcePath, 'models'),
-  path.resolve(paths.sourcePath, 'actions'),
-  path.resolve(paths.validatorsPath, 'api'),
-  path.resolve(paths.serverPath, 'serverUtils'),
-  path.resolve(paths.serverPath, 'routeControllers'),
+const pathsForValidationFiles = [
+  {
+    folderPath: path.resolve(paths.sourcePath, 'api'),
+  },
+];
+const pathsForExportFiles = [
+  {
+    folderPath: path.resolve(paths.sourcePath, 'const'),
+    exportDefault: false,
+  },
+  {
+    folderPath: path.resolve(paths.sourcePath, 'utils'),
+    exportDefault: false,
+  },
+  {
+    folderPath: path.resolve(paths.serverPath, 'serverUtils'),
+    exportDefault: false,
+  },
+  {
+    folderPath: path.resolve(paths.sourcePath, 'api'),
+    exportDefault: false,
+  },
+  {
+    folderPath: path.resolve(paths.sourcePath, 'models'),
+    exportDefault: false,
+  },
+  {
+    folderPath: path.resolve(paths.sourcePath, 'pages'),
+    exportDefault: false,
+  },
+  {
+    folderPath: path.resolve(paths.sourcePath, 'actions'),
+    exportDefault: false,
+  },
+  {
+    folderPath: path.resolve(paths.serverPath, 'routeControllers'),
+    exportDefault: false,
+  },
+  {
+    folderPath: path.resolve(paths.validatorsPath, 'api'),
+    exportDefault: true,
+  },
+];
+const pathsForAssetsExportFiles = [
+  {
+    folderPath: path.resolve(paths.assetsPath, 'icons'),
+    exportDefault: false,
+  },
+  {
+    folderPath: path.resolve(paths.assetsPath, 'images'),
+    exportDefault: true,
+  },
 ];
 
-function reportDiagnostics(diagnostics: ts.Diagnostic[]): void {
-  diagnostics.forEach(diagnostic => {
-    let message = 'Error';
-    if (diagnostic.file) {
-      const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-      message += ` ${diagnostic.file.fileName} (${line + 1},${character + 1})`;
-    }
-    message += `: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')}`;
-    console.log(message);
-  });
-}
+// @ts-ignore
+// eslint-disable-next-line prefer-destructuring
+const { tabWidth } = eslintConfig.rules['prettier/prettier'][1];
 
-function readConfigFile(configFileName: string) {
-  const configFileText = fs.readFileSync(configFileName, 'utf-8');
-
-  // Parse JSON, after removing comments. Just fancier JSON.parse
-  const result = ts.parseConfigFileTextToJson(configFileName, configFileText);
-  const configObject = result.config;
-
-  return ts.parseJsonConfigFileContent(configObject, ts.sys, path.dirname(configFileName));
-}
+type TypeProcessParams = { changedFiles?: string[] };
 
 class GenerateFiles {
-  _removeFileExtension(str: string) {
-    return str.replace(/\.[^/.]+$/, '');
+  _saveFile(params: { content?: string; filePath: string; noEslint?: boolean }) {
+    const { content, filePath, noEslint } = params;
+
+    if (content == null) return false;
+
+    const oldFileContent = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : '';
+
+    return Promise.resolve()
+      .then(() => (noEslint ? content : this._formatTextWithEslint(content)))
+      .then(formattedNewContent => {
+        if (oldFileContent === formattedNewContent) return false;
+
+        return fs.promises.writeFile(filePath, formattedNewContent, 'utf8').then(() => {
+          if (env.LOGS_GENERATE_FILES) console.log(`${logsPrefix} Changed: ${filePath}`);
+
+          return true;
+        });
+      });
   }
 
   _objToString(obj: Record<string, any>) {
+    // Format like Prettier instead of calling _formatTextWithEslint to save some time
     return `{\n${_.entries(obj)
-      .map(pair => `  ${pair.join(': ')}`)
+      .map(pair => `${_.repeat(' ', tabWidth)}${pair.join(': ')}`)
       .join(',\n')},\n};\n`;
+  }
+
+  _excludeFileNames(filesNames, skipFiles?: string[]) {
+    const skipFilesArray = ['package.json'].concat(skipFiles || []);
+
+    return filesNames.filter(
+      fileName => !skipFilesArray.some(testStr => fileName.includes(testStr))
+    );
   }
 
   _formatTextWithEslint(str: string) {
     return eslint.lintText(str).then(data => data[0].output || str);
   }
 
-  _formatFilesWithEslint(str: string) {
-    return eslint.lintFiles(str);
-  }
-
-  _saveFile({
-    content,
-    filePath,
-    noEslint,
-  }: {
-    content?: string;
-    filePath: string;
-    noEslint?: boolean;
+  _createExportObjectFromFilesArray(params: {
+    folderName: string;
+    filesNames: string[];
+    exportDefault: boolean;
   }) {
-    const oldFileContent = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : '';
-    const newContent = content != null ? content : oldFileContent;
+    const { folderName, filesNames, exportDefault } = params;
 
-    return Promise.resolve()
-      .then(() => (noEslint ? Promise.resolve(newContent) : this._formatTextWithEslint(newContent)))
-      .then(formattedNewContent => {
-        if (oldFileContent === formattedNewContent) return false;
+    return filesNames.reduce((exportObject, fileName) => {
+      const { name: fileNameNoExt } = path.parse(fileName);
 
-        return fs.promises
-          .writeFile(filePath, formattedNewContent, 'utf8')
-          .then(() => {
-            if (env.LOGS_GENERATE_FILES) console.log(`${logsPrefix} Changed: ${filePath}`);
-          })
-          .then(() => true);
-      });
+      const paramName = _.camelCase(fileNameNoExt);
+      let paramValue = `require('./${folderName}/${fileName}')`;
+      paramValue = exportDefault ? `${paramValue}.default` : paramValue;
+
+      return { ...exportObject, [paramName]: paramValue };
+    }, {});
   }
 
-  generateExportFiles({ changedFiles }: any) {
-    const filteredFoldersPaths = pathsForgenerateExportFiles.filter(
-      folderPath => !changedFiles || changedFiles.some(fPath => fPath.indexOf(folderPath) !== -1)
-    );
-    const specialExports = [path.resolve(paths.validatorsPath, 'api')];
+  generateExportFiles({ changedFiles }: TypeProcessParams) {
+    const config =
+      changedFiles == null
+        ? pathsForExportFiles
+        : pathsForExportFiles.filter(({ folderPath }) =>
+            changedFiles.some(filePath => filePath.includes(folderPath))
+          );
 
-    if (filteredFoldersPaths.length === 0) return false;
+    if (config.length === 0) return false;
 
     return Promise.all(
-      filteredFoldersPaths.map(folderPath => {
-        const folderName = folderPath.split(path.sep).pop();
+      config.map(({ folderPath, exportDefault }) => {
+        const { base: folderName } = path.parse(folderPath);
+
         const generatedFileName = `_${folderName}.ts`;
         const generatedFilePath = path.resolve(folderPath, generatedFileName);
-        const skipFilesArray = ['package.json', 'messages.ts', generatedFileName];
 
         return Promise.resolve()
           .then(() => fs.promises.readdir(folderPath))
-          .then(filesNames =>
-            filesNames.filter(
-              fileName => !skipFilesArray.some(testStr => fileName.includes(testStr))
-            )
-          )
+          .then(filesNames => this._excludeFileNames(filesNames, [generatedFileName]))
           .then(filesNames =>
             filesNames.reduce((template, fileName) => {
-              const fileNameWithoutExtension = fileName.replace(/\.[a-z]+$/, '');
+              const { name: fileNameNoExt } = path.parse(fileName);
 
-              if (specialExports.indexOf(folderPath) !== -1) {
-                return `${template}export { default as ${fileNameWithoutExtension} } from './${fileNameWithoutExtension}';\n`;
-              }
-
-              return `${template}export * from './${fileNameWithoutExtension}';\n`;
+              return exportDefault
+                ? `${template}export { default as ${fileNameNoExt} } from './${fileNameNoExt}';\n`
+                : `${template}export * from './${fileNameNoExt}';\n`;
             }, '// This file is auto-generated\n\n')
           )
-          .then(newFileContent =>
+          .then(content =>
             this._saveFile({
+              content,
               filePath: generatedFilePath,
-              content: newFileContent,
               noEslint: true,
             })
           );
       })
-    );
+    ).then(filesSavedMarks => filesSavedMarks.some(Boolean));
   }
 
-  generateValidationFiles({ changedFiles }: any) {
-    const filteredFoldersPaths = pathsForGenerateValidationFiles.filter(
-      folderPath =>
-        !changedFiles ||
-        changedFiles.some(
-          fPath => fPath.indexOf(folderPath) !== -1 || fPath.indexOf(modelsPath) !== -1
-        )
-    );
+  generateValidationFiles({ changedFiles }: TypeProcessParams) {
+    const config =
+      changedFiles == null
+        ? pathsForValidationFiles
+        : pathsForValidationFiles.filter(({ folderPath }) =>
+            changedFiles.some(
+              filePath => filePath.includes(folderPath) || filePath.includes(modelsPath)
+            )
+          );
 
-    if (filteredFoldersPaths.length === 0) return false;
+    if (config.length === 0) return false;
 
     return Promise.all(
-      filteredFoldersPaths.map(folderPath => {
-        const folderName = folderPath.split(path.sep).pop();
+      config.map(({ folderPath }) => {
+        const { base: folderName } = path.parse(folderPath);
+
         const generatedFileName = `_${folderName}.ts`;
         const generatedFolderPath = path.resolve(paths.validatorsPath, folderName);
 
         if (!fs.existsSync(generatedFolderPath)) fs.mkdirSync(generatedFolderPath);
 
-        const skipFilesArray = ['package.json', 'messages.ts', generatedFileName];
+        return Promise.resolve()
+          .then(() => fs.promises.readdir(folderPath))
+          .then(filesNames => this._excludeFileNames(filesNames, [generatedFileName]))
+          .then(filesNames => filesNames.map(fileName => path.resolve(folderPath, fileName)))
+          .then(filesPaths =>
+            Promise.all(
+              Compiler.compile(filesPaths, { inlineImports: true }).map(({ filePath, content }) => {
+                const { base: fileName } = path.parse(filePath);
+
+                const generatedFilePath = path.resolve(generatedFolderPath, fileName);
+
+                return this._saveFile({ filePath: generatedFilePath, content });
+              })
+            )
+          );
+      })
+    ).then(filesSavedMarks => _.flatten(filesSavedMarks).some(Boolean));
+  }
+
+  generateAssetsExportFiles({ changedFiles }: TypeProcessParams) {
+    const config =
+      changedFiles == null
+        ? pathsForAssetsExportFiles
+        : pathsForAssetsExportFiles.filter(({ folderPath }) =>
+            changedFiles.some(filePath => filePath.includes(folderPath))
+          );
+
+    if (config.length === 0) return false;
+
+    return Promise.all(
+      config.map(({ folderPath, exportDefault }) => {
+        const { base: folderName, dir: parentPath } = path.parse(folderPath);
+
+        const generatedFileName = `${folderName}.ts`;
+        const generatedFilePath = path.resolve(parentPath, generatedFileName);
 
         return Promise.resolve()
           .then(() => fs.promises.readdir(folderPath))
-          .then(filesNames =>
-            filesNames.filter(
-              fileName => !skipFilesArray.some(testStr => fileName.includes(testStr))
-            )
-          )
           .then(filesNames => {
-            const filesPaths = filesNames.map(fileName => path.resolve(folderPath, fileName));
-
-            const newContents = Compiler.compile(filesPaths, {
-              inlineImports: true,
+            const exportObject = this._createExportObjectFromFilesArray({
+              folderName,
+              filesNames,
+              exportDefault,
             });
 
-            return Promise.all(
-              newContents.map(({ filePath, content }) => {
-                const { base: fileName } = path.parse(filePath);
-                const generatedFilePath = path.resolve(generatedFolderPath, fileName);
-                return this._saveFile({ filePath: generatedFilePath, content });
-              })
-            );
-          });
-      })
-    ).then(_.flatten);
-  }
-
-  generateAssetsExportFiles({ changedFiles }: any) {
-    const configs = [
-      {
-        folderPath: path.resolve(paths.assetsPath, 'icons'),
-        exportDefault: false,
-      },
-      {
-        folderPath: path.resolve(paths.assetsPath, 'images'),
-        exportDefault: true,
-      },
-    ];
-
-    const filteredConfig = configs.filter(
-      ({ folderPath }) =>
-        !changedFiles || changedFiles.some(fPath => fPath.indexOf(folderPath) !== -1)
-    );
-
-    if (filteredConfig.length === 0) return false;
-
-    return Promise.all(
-      filteredConfig.map(({ folderPath, exportDefault }) => {
-        const pathArray = folderPath.split(path.sep);
-        const filesFolder = pathArray.pop();
-        const parentPath = pathArray.join(path.sep);
-        const filesPath = path.resolve(parentPath, filesFolder);
-        const generatedFileName = `${filesFolder}.ts`;
-        const generatedFilePath = path.resolve(parentPath, generatedFileName);
-        const filesMapper = {};
-
-        return Promise.resolve()
-          .then(() => fs.promises.readdir(filesPath))
-          .then(filesNames =>
-            filesNames.forEach(fileName => {
-              const exportKey = _.camelCase(this._removeFileExtension(fileName));
-              const exportValue = `require('./${filesFolder}/${fileName}')${
-                exportDefault ? '.default' : ''
-              }`;
-
-              filesMapper[exportKey] = exportValue;
-            })
-          )
-          .then(
-            () =>
-              `// This file is auto-generated\n\nexport const ${filesFolder} = ${this._objToString(
-                filesMapper
-              )}`
-          )
-          .then(newFileContent =>
+            return `// This file is auto-generated\n\nexport const ${folderName} = ${this._objToString(
+              exportObject
+            )}`;
+          })
+          .then(content =>
             this._saveFile({
+              content,
               filePath: generatedFilePath,
-              content: newFileContent,
               noEslint: true,
             })
           );
       })
-    );
+    ).then(filesSavedMarks => filesSavedMarks.some(Boolean));
   }
 
-  generateSeparatedTypes() {
-    const separatedTypesConfig = readConfigFile(
-      path.resolve(paths.rootPath, 'tsconfig-store.json')
-    );
-    const separatedTypesProgram = ts.createProgram(
-      separatedTypesConfig.fileNames,
-      separatedTypesConfig.options
-    );
-    const emitResult = separatedTypesProgram.emit();
-
-    reportDiagnostics(
-      ts.getPreEmitDiagnostics(separatedTypesProgram).concat(emitResult.diagnostics)
-    );
-
-    if (emitResult.emitSkipped) {
-      return Promise.reject(new Error('generateSeparatedTypes: compile skipped'));
-    }
-
-    return Promise.resolve();
-
-    // return this._formatFilesWithEslint('separated-types').then(data =>
-    //   Promise.all(
-    //     data.map(fileData => fs.promises.writeFile(fileData.filePath, fileData.output, 'utf8'))
-    //   )
-    // );
-  }
-
-  process({ changedFiles }: any) {
+  process({ changedFiles }: TypeProcessParams) {
     const startTime = Date.now();
+    const isFirstGeneration = changedFiles == null;
     let filesChanged = false;
 
-    function setFilesChanged(fChanged) {
-      const changed = _.isArray(fChanged) && fChanged.some(mark => mark === true);
-
-      if (changed) filesChanged = true;
-    }
-
+    // Order matters
     return Promise.resolve()
-      .then((): any => this.generateValidationFiles({ changedFiles }))
-      .then(setFilesChanged)
-      .then((): any => this.generateAssetsExportFiles({ changedFiles }))
-      .then(setFilesChanged)
-      .then((): any => this.generateExportFiles({ changedFiles }))
-      .then(() => this.generateSeparatedTypes())
-      .then(setFilesChanged)
-      .then(() => {
-        const timeStamp = ` ${chalk.yellow(new Date().toTimeString().split(/ +/)[0])}`;
+      .then(() => this.generateValidationFiles({ changedFiles }))
+      .then(changedMark => changedMark && (filesChanged = true))
 
-        console.log(
-          '%s Finished generating files within %s seconds',
-          chalk.blue(`[WEBPACK${timeStamp}]`),
-          chalk.blue(String((Date.now() - startTime) / 1000))
-        );
+      .then(() => this.generateExportFiles({ changedFiles }))
+      .then(changedMark => changedMark && (filesChanged = true))
+
+      .then(() => this.generateAssetsExportFiles({ changedFiles }))
+      .then(changedMark => changedMark && (filesChanged = true))
+
+      .then(() => {
+        if (isFirstGeneration || filesChanged) {
+          const endTime = Date.now();
+
+          console.log(
+            '%s Finished generating files within %s seconds',
+            logsPrefix,
+            chalk.blue(String((endTime - startTime) / 1000))
+          );
+        }
 
         return filesChanged;
       });

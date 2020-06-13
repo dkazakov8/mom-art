@@ -16,6 +16,7 @@ export * from './localize';
 export * from './makeObservable';
 export * from './measureClient';
 export * from './mergeObservableDeep';
+export * from './messages';
 export * from './moveElementInArray';
 export * from './printMeasures';
 export * from './proxy';

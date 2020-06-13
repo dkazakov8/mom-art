@@ -12,7 +12,6 @@ import { pluginBanner } from '../plugins/pluginBanner';
 import { pluginDefine } from '../plugins/pluginDefine';
 import { pluginExtract } from '../plugins/pluginExtract';
 import { pluginAnalyzer } from '../plugins/pluginAnalyzer';
-import { pluginCDNUploader } from '../plugins/pluginCDNUploader';
 import { pluginChangedFiles } from '../plugins/pluginChangedFiles';
 import { pluginLodashModule } from '../plugins/pluginLodashModule';
 import { pluginCompressionGzip } from '../plugins/pluginCompressionGzip';
@@ -31,5 +30,4 @@ export const configPlugins: webpack.Configuration['plugins'] = [
   env.LOGS_WATCHED_FILES && pluginChangedFiles('[WEBPACK client]'),
   env.GENERATE_COMPRESSED && pluginCompressionGzip,
   env.GENERATE_COMPRESSED && pluginCompressionBrotli,
-  env.YANDEX_STORAGE_ENABLED && pluginCDNUploader,
 ].filter(Boolean);

@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 
 import { TypeGalleryItem } from 'models';
 import { StoreContext } from 'stores/StoreRoot';
@@ -11,8 +12,10 @@ interface GalleryItemProps {
   imgData: TypeGalleryItem;
 }
 
+@observer
 export class GalleryItem extends React.Component<GalleryItemProps> {
   declare context: React.ContextType<typeof StoreContext>;
+  static contextType = StoreContext;
 
   render() {
     const {

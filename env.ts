@@ -42,7 +42,6 @@ class Env {
 
   SENTRY_URL = '';
   GIT_COMMIT = '';
-  NODE_ENV: `development` | `production` = `development`;
   REACT_LIBRARY: `react` | `inferno` = `react`;
   HOT_RELOAD = false;
   HOT_RELOAD_PORT = 0;
@@ -63,23 +62,26 @@ class Env {
   START_SERVER_AFTER_BUILD = false;
   DEV_TOOL: Devtool = 'cheap-module-eval-source-map';
   DEV_TOOL_SERVER: Devtool = 'cheap-module-eval-source-map';
-  NODE_PATH = '';
-  HTTPS_BY_NODE = false;
-  EXPRESS_PORT = 0;
   SESSION_DURATION = 0;
   ALLOWED_EMAILS = '';
   SESSION_SECRET = '';
-  YANDEX_STORAGE_ENABLED = false;
-  LOGS_YANDEX_STORAGE = false;
-  YANDEX_STORAGE_BUCKET = '';
-  YANDEX_STORAGE_ENDPOINT = '';
-  YANDEX_STORAGE_COPY_TO_PROD = false;
-  YANDEX_STORAGE_BUCKET_PREFIX = '';
-  YANDEX_STORAGE_ACCESS_KEY_ID = '';
-  YANDEX_STORAGE_SECRET_ACCESS_KEY = '';
+
+  LOGS_WATCHED_FILES = false;
+
+  CDN_ENABLED = false;
+  CDN_BUCKET = '';
+  CDN_ENDPOINT = '';
+  CDN_BUCKET_PREFIX = '';
+  CDN_ACCESS_KEY_ID = '';
+  CDN_SECRET_ACCESS_KEY = '';
+
+  NODE_ENV: `development` | `production` = `development`;
+  NODE_PATH = '';
+  EXPRESS_PORT = 0;
+  HTTPS_BY_NODE = false;
 
   LOGS_GENERATE_FILES = false;
-  LOGS_WATCHED_FILES = false;
+  LOGS_CDN = false;
 
   REDIS_PORT_6379_TCP_ADDR = '';
   REDIS_PORT_6379_TCP_PORT = 0;

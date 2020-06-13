@@ -9,6 +9,7 @@ export * from './getLocalization';
 export * from './handleApiError';
 export * from './handleFormError';
 export * from './logout';
+export * from './messages';
 export * from './onStoreInitializedClient';
 export * from './onStoreInitializedServer';
 export * from './raiseModal';

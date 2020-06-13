@@ -1,5 +1,6 @@
 import React from 'react';
 import { observable } from 'mobx';
+import { observer } from 'mobx-react';
 
 import { generateArray } from 'utils';
 import { Header } from 'components/Header';
@@ -15,6 +16,7 @@ const ITEMS_SPACER = 10;
 const GALLERY_PADDING = 20;
 const GALLERY_MAX_WIDTH = 900;
 
+@observer
 export class Gallery extends React.Component {
   declare context: React.ContextType<typeof StoreContext>;
   static contextType = StoreContext;

@@ -1,5 +1,6 @@
 import cn from 'classnames';
 import React from 'react';
+import { observer } from 'mobx-react';
 
 import { Header } from 'components/Header';
 import { StoreContext } from 'stores/StoreRoot';
@@ -11,6 +12,7 @@ interface ErrorPageProps {
   errorNumber: number;
 }
 
+@observer
 export class ErrorPage extends React.Component<ErrorPageProps> {
   declare context: React.ContextType<typeof StoreContext>;
   static contextType = StoreContext;

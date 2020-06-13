@@ -92,7 +92,7 @@ export function uploadImageController({ req, res }) {
             .toFile(filePath)
             .then(info => {
               uploadedFileData.sources[fileSuffix] = {
-                src: `${env.YANDEX_STORAGE_ENDPOINT}/${env.YANDEX_STORAGE_BUCKET_PREFIX}${env.YANDEX_STORAGE_BUCKET}/${uploadsFolderName}/${fileName}`,
+                src: `${env.CDN_ENDPOINT}/${env.CDN_BUCKET_PREFIX}${env.CDN_BUCKET}/${uploadsFolderName}/${fileName}`,
                 width: info.width,
                 height: info.height,
               };
@@ -100,7 +100,7 @@ export function uploadImageController({ req, res }) {
             .then(() => fs.promises.readFile(filePath))
             .then(fileContent =>
               uploadToBucket({
-                Bucket: `${env.YANDEX_STORAGE_BUCKET_PREFIX}${env.YANDEX_STORAGE_BUCKET}`,
+                Bucket: `${env.CDN_BUCKET_PREFIX}${env.CDN_BUCKET}`,
                 fileName: `${uploadsFolderName}/${fileName}`,
                 fileContent,
                 ContentType: mimetype,
