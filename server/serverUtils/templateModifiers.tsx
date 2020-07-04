@@ -36,8 +36,30 @@ export function injectCompressed(req, str) {
   return !acceptedCompression
     ? str
     : str
-        .replace(/\.js/g, `.js.${acceptedCompression.extension}`)
-        .replace(/\.css/g, `.css.${acceptedCompression.extension}`);
+        .replace(/(\.js)/g, `$1.${acceptedCompression.extension}`)
+        .replace(/(\.css)/g, `$1.${acceptedCompression.extension}`);
+}
+
+export function injectAnalytics(str) {
+  return str.replace(
+    '</head>',
+    `
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+      (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+      ym(59188381, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+      });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/59188381" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+</head>`
+  );
 }
 
 export function injectMetaTags(str, store) {

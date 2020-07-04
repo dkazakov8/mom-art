@@ -5,11 +5,11 @@
 
 import webpack from 'webpack';
 
-export const loaderFiles: webpack.RuleSetLoader = {
+export const loaderFontsServer: webpack.RuleSetLoader = {
   loader: 'file-loader',
   options: {
     name: '[contenthash].[ext]',
-    outputPath: 'images',
-    emitFile: true,
+    outputPath: 'fonts',
+    emitFile: false,
   },
 };

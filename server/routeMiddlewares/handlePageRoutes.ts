@@ -6,6 +6,7 @@ import { createMeasure } from 'utils';
 import {
   injectMetaTags,
   injectMeasures,
+  injectAnalytics,
   injectAppMarkup,
   injectCompressed,
   injectCSPProtection,
@@ -44,6 +45,7 @@ export function handlePageRoutes(app) {
       .then(measure.wrap('injectOtherData'))
       .then(modTemplate => injectMetaTags(modTemplate, store))
       .then(modTemplate => injectCompressed(req, modTemplate))
+      .then(modTemplate => injectAnalytics(modTemplate))
       .then(modTemplate => injectCSPProtection(modTemplate, res))
       .then(modTemplate => injectThemeProperties(modTemplate, store))
       .then(modTemplate => injectInitialStoreData(modTemplate, store))

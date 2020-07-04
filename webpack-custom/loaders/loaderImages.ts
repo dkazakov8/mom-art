@@ -5,11 +5,11 @@
 
 import webpack from 'webpack';
 
-export const loaderFilesServer: webpack.RuleSetLoader = {
+export const loaderImages: webpack.RuleSetLoader = {
   loader: 'file-loader',
   options: {
     name: '[contenthash].[ext]',
     outputPath: 'images',
-    emitFile: false,
+    emitFile: true,
   },
 };

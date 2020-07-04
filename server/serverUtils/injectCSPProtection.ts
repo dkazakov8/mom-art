@@ -10,14 +10,14 @@ export function injectCSPProtection(str, res) {
 
   const ContentSecurityPolicyRules = {
     'default-src': `'self'`,
-    'style-src': `'self' 'unsafe-inline' https://storage.yandexcloud.net https://fonts.googleapis.com`,
-    'script-src': `'self' 'unsafe-inline' https://storage.yandexcloud.net https://apis.google.com https://mc.yandex.ru ${
+    'style-src': `'self' 'unsafe-inline' ${env.CDN_ENDPOINT}`,
+    'script-src': `'self' 'unsafe-inline' ${env.CDN_ENDPOINT} https://mc.yandex.ru ${
       env.HOT_RELOAD ? hotReloadUrl : ''
     }`,
-    'font-src': `'self' https://fonts.gstatic.com`,
+    'font-src': `'self' ${env.CDN_ENDPOINT}`,
     'connect-src': `'self' ws: https://sentry.io https://mc.yandex.ru`,
-    'img-src': `'self' https://storage.yandexcloud.net https://mc.yandex.ru`,
-    'frame-src': `'self' https://accounts.google.com`,
+    'img-src': `'self' ${env.CDN_ENDPOINT} https://mc.yandex.ru`,
+    'frame-src': `'self'`,
   };
 
   const CSPJoined = Object.keys(ContentSecurityPolicyRules)

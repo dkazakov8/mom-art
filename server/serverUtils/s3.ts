@@ -34,6 +34,23 @@ export function createCDNBucket({ Bucket }: { Bucket: string }) {
       if (err.statusCode >= 400 && err.statusCode < 500) {
         return Promise.resolve()
           .then(() => s3.createBucket({ Bucket, ACL: 'public-read' }).promise())
+          .then(() => s3.headBucket({ Bucket }).promise())
+          .then(() =>
+            s3
+              .putBucketCors({
+                Bucket,
+                CORSConfiguration: {
+                  CORSRules: [
+                    {
+                      AllowedHeaders: ['*'],
+                      AllowedMethods: ['GET'],
+                      AllowedOrigins: ['*'],
+                    },
+                  ],
+                },
+              })
+              .promise()
+          )
           .then(logMessage(`Bucket:${Bucket} created`));
       }
 
