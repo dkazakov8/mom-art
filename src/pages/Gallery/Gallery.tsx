@@ -1,12 +1,11 @@
 import React from 'react';
 import { observable } from 'mobx';
-import { observer } from 'mobx-react';
 
 import { generateArray } from 'utils';
 import { Header } from 'components/Header';
 import { ModalsCollection } from 'components/ModalsCollection';
 import { TypeGalleryItem } from 'models';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import { GalleryItem } from './GalleryItem';
 import styles from './Gallery.scss';
@@ -16,10 +15,9 @@ const ITEMS_SPACER = 10;
 const GALLERY_PADDING = 20;
 const GALLERY_MAX_WIDTH = 900;
 
-@observer
-export class Gallery extends React.Component {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Gallery extends ConnectedComponent {
+  declare context: typeof ConnectedComponent['context'];
 
   UNSAFE_componentWillMount() {
     const { store } = this.context;

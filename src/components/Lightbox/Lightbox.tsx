@@ -1,10 +1,9 @@
 import cn from 'classnames';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { Icon } from 'components/Icon';
 import { Spinner } from 'components/Spinner';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import styles from './Lightbox.scss';
 
@@ -12,10 +11,9 @@ interface LightboxProps {
   srcGetter: (obj: Record<string, any>) => string;
 }
 
-@observer
-export class Lightbox extends React.Component<LightboxProps> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Lightbox extends ConnectedComponent<LightboxProps> {
+  declare context: typeof ConnectedComponent['context'];
 
   componentDidMount() {
     window.addEventListener('keydown', this.onKeyDown);

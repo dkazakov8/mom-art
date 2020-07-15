@@ -1,20 +1,17 @@
-import _ from 'lodash';
 import cn from 'classnames';
 import React from 'react';
-import { observer } from 'mobx-react';
 
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import { Icon } from '../Icon';
 
 import styles from './Header.scss';
 
-@observer
-export class ThemeChanger extends React.Component {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class ThemeChanger extends ConnectedComponent {
+  declare context: typeof ConnectedComponent['context'];
 
-  render() {
+  setNextColorScheme = () => {
     const {
       store,
       store: {
@@ -22,17 +19,35 @@ export class ThemeChanger extends React.Component {
       },
     } = this.context;
 
+    // eslint-disable-next-line prefer-destructuring
+    const nextColorTheme = themesList.filter(theme => theme !== currentTheme)[0];
+
+    store.actions.common.setTheme({
+      theme: nextColorTheme,
+    });
+  };
+
+  render() {
+    const {
+      store: {
+        ui: { currentTheme },
+      },
+    } = this.context;
+
+    const isDarkScheme = currentTheme === 'dark';
+
     return (
-      <div className={styles.buttonsBlock}>
-        {themesList.map(theme => (
-          <Icon
-            key={theme}
-            glyph={Icon.glyphs[`theme${_.capitalize(theme)}`]}
-            className={cn(styles.themeToggler, theme === currentTheme && styles.active)}
-            onClick={() => store.actions.common.setTheme({ theme })}
-          />
-        ))}
-      </div>
+      <>
+        <div
+          className={cn(styles.themeSwither, isDarkScheme && styles.active)}
+          onClick={this.setNextColorScheme}
+        />
+        <Icon
+          glyph={isDarkScheme ? Icon.glyphs.themeLight : Icon.glyphs.themeDark}
+          className={styles.themeIcon}
+          onClick={this.setNextColorScheme}
+        />
+      </>
     );
   }
 }

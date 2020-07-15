@@ -1,14 +1,12 @@
 import _ from 'lodash';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { routeComponents } from 'routeComponents';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
-@observer
-export class Router extends React.Component {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Router extends ConnectedComponent {
+  declare context: typeof ConnectedComponent['context'];
 
   render() {
     const {

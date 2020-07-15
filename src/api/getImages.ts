@@ -1,5 +1,5 @@
 import { ApiRoute } from '../models/ApiRoute';
-import { TypeGalleryItems } from '../models/GalleryItems';
+import { TypeGalleryItems } from '../models/TypeGalleryItems';
 
 type TypeRequestParams = undefined;
 

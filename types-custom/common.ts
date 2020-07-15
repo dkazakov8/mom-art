@@ -24,14 +24,6 @@ export type FieldValidatorType = {
   message: MessageObjectType;
 };
 
-export type ModalType = {
-  id: string;
-  name: string;
-  status: string;
-
-  data?: Record<string, any>;
-};
-
 export type NotificationType = {
   type: string;
   message: string;

@@ -1,5 +1,5 @@
 import { generateId } from 'utils';
-import { ModalType } from 'common';
+import { TypeModal } from 'models/TypeModals';
 import { ActionFirstParams } from 'models';
 
 export function raiseModal(
@@ -12,7 +12,7 @@ export function raiseModal(
   const alreadyUsedIds = modals.map(({ id }) => id);
   const id = generateId({ excludedIds: alreadyUsedIds });
 
-  const modal: ModalType = {
+  const modal: TypeModal = {
     id,
     name,
     data,

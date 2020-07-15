@@ -1,5 +1,6 @@
 import { makeObservable } from 'utils';
-import { ModalType, NotificationType, ValuesOfArrayType } from 'common';
+import { NotificationType, ValuesOfArrayType } from 'common';
+import { TypeModals } from 'models/TypeModals';
 import themes from 'styles/themes.scss';
 
 type LightboxType = {
@@ -27,6 +28,15 @@ export class StoreUi {
     width: 0,
     height: 0,
   };
-  modals: ModalType[] = [];
+  heights = {
+    header: 0,
+  };
   notifications: NotificationType[] = [];
+  modals: TypeModals = [];
+  get modalIsOpen() {
+    return this.modals.length > 0;
+  }
+  get lastModalIsLeaving() {
+    return this.modals[0] && this.modals[0].status === 'leaving';
+  }
 }

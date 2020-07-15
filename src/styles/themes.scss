@@ -10,6 +10,13 @@
   --w2alpha: rgba(255, 255, 255, 0.5);
   --w6: #9099a3;
   --w8: #000000;
+
+  --scroll-track-bg: rgba(255, 255, 255, 0.7);
+  --header-bg: rgba(255, 255, 255, 0.8);
+  --text: rgb(19, 19, 19);
+  --text-50: rgba(19, 19, 19, 0.5);
+  --link-active: rgb(192, 159, 104);
+  --link-inactive: rgb(220, 203, 175);
 }
 
 .dark {
@@ -24,4 +31,11 @@
   --w2alpha: rgba(0, 0, 0, 0.5);
   --w6: #a8b6c4;
   --w8: #fdfdfe;
+
+  --scroll-track-bg: rgba(0, 0, 0, 0.7);
+  --header-bg: rgba(0, 0, 0, 0.8);
+  --text: rgb(187, 187, 187);
+  --text-50: rgba(187, 187, 187, 0.5);
+  --link-active: rgb(192, 159, 104);
+  --link-inactive: rgb(102, 86, 58);
 }

@@ -79,7 +79,7 @@ function startFileWatcher({ onFilesChanged }: { onFilesChanged: () => void }) {
 
     clearTimeout(watchDebounceTimeout);
     watchDebounceTimeout = setTimeout(() => {
-      console.log(`triggered by`, changedFiles);
+      // console.log(`triggered by`, changedFiles);
 
       changedFiles = [];
 

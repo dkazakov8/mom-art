@@ -1,42 +1,57 @@
 @import "mixins.scss";
 
-.modals {
-}
-
 .backdrop {
   position: fixed;
+  z-index: 12;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 12;
-  background: rgba(0, 0, 0, 0.7);
-  animation: fadeIn 0.2s;
-  transition: opacity 0.2s;
+  background: rgba(0, 0, 0, 0.3);
+  animation-name: fadeIn;
+  transition-property: opacity;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  &.leaving {
+  &.isLeaving {
     opacity: 0;
   }
 }
 
 .modal {
-  color: #000;
+  color: var(--link-active);
   font-size: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   position: relative;
-  z-index: 12;
-  width: 500px;
-  background: #fff;
-  padding: 30px;
+  width: 600px;
+  background: var(--header-bg);
+  padding: 70px 150px;
+  border-radius: 10px;
+  transition-property: opacity;
 
-  .modalTitle {
-    font-size: 30px;
-    line-height: 32px;
+  .close {
+    position: absolute;
+    top: -45px;
+    right: -90px;
+    font-size: 25px;
+    padding: 10px;
+    cursor: pointer;
+    color: var(--link-inactive);
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--link-active);
+    }
+  }
+
+  .title {
+    font-family: Liana;
+    font-size: 40px;
+    line-height: 42px;
+    text-align: center;
   }
 
   .modalContent {
@@ -52,19 +67,7 @@
     }
   }
 
-  .close {
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    right: 0;
-    font-size: 16px;
-    padding: 10px;
-    color: #000;
-    transition: color 0.2s;
-    cursor: pointer;
-
-    &:hover {
-      color: $B_800;
-    }
+  &.isLeaving {
+    opacity: 0;
   }
 }

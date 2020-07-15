@@ -1,9 +1,8 @@
 import _ from 'lodash';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { MessageObjectType } from 'common';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 interface LabelProps {
   label: MessageObjectType | string;
@@ -13,10 +12,9 @@ interface LabelProps {
   className?: string;
 }
 
-@observer
-export class Label extends React.Component<LabelProps> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Label extends ConnectedComponent<LabelProps> {
+  declare context: typeof ConnectedComponent['context'];
 
   render() {
     const { store } = this.context;

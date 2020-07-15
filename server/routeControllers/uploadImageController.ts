@@ -6,7 +6,7 @@ import multer from 'multer';
 
 import { isLoggedIn, uploadToBucket } from 'serverUtils';
 import { db } from 'db';
-import { TypeGalleryItem } from 'models/GalleryItems';
+import { TypeGalleryItem } from 'TypeGalleryItems.ts';
 
 import { env } from '../../env';
 import { paths } from '../../paths';
