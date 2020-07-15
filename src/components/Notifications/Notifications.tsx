@@ -1,10 +1,9 @@
 import cn from 'classnames';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { generateArray } from 'utils';
 import { Icon } from 'components/Icon';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import styles from './Notifications.scss';
 
@@ -39,10 +38,9 @@ interface NotificationProps {
  *
  */
 
-@observer
-class Notification extends React.Component<NotificationProps> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+class Notification extends ConnectedComponent<NotificationProps> {
+  declare context: typeof ConnectedComponent['context'];
 
   ref = null;
 
@@ -93,10 +91,9 @@ class Notification extends React.Component<NotificationProps> {
   }
 }
 
-@observer
-export class Notifications extends React.Component {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Notifications extends ConnectedComponent {
+  declare context: typeof ConnectedComponent['context'];
 
   render() {
     const {

@@ -1,13 +1,12 @@
 import _ from 'lodash';
 import cn from 'classnames';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { fieldValidators } from 'utils';
 import { notificationTypes } from 'const';
 import { FormFileType } from 'common';
 import { Form } from 'components/Form';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import { messages } from './messages';
 import styles from './ModalsCollection.scss';
@@ -25,10 +24,9 @@ interface ModalUploadImageProps {
   removeModal: () => void;
 }
 
-@observer
-class ModalUploadImage extends React.Component<ModalUploadImageProps> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+class ModalUploadImage extends ConnectedComponent<ModalUploadImageProps> {
+  declare context: typeof ConnectedComponent['context'];
 
   handleFormSubmit = (formData, event) => {
     const { store } = this.context;
@@ -167,10 +165,9 @@ class ModalUploadImage extends React.Component<ModalUploadImageProps> {
   }
 }
 
-@observer
-class ModalAuth extends React.Component<{ removeModal: () => void }> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+class ModalAuth extends ConnectedComponent<{ removeModal: () => void }> {
+  declare context: typeof ConnectedComponent['context'];
 
   handleFormSubmit = formData => {
     const { store } = this.context;

@@ -1,17 +1,18 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import ReactMarkdown from 'react-markdown';
+import Scrollbar from 'react-scrollbars-custom';
 
 import { Header } from 'components/Header';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
+import { images } from 'assets/images';
+import { Footer } from 'components/Footer';
 
 import styles from './Reviews.scss';
 import { messages } from './messages';
 
-@observer
-export class Reviews extends React.Component {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Reviews extends ConnectedComponent {
+  declare context: typeof ConnectedComponent['context'];
 
   UNSAFE_componentWillMount() {
     const { store } = this.context;
@@ -28,9 +29,18 @@ export class Reviews extends React.Component {
     return (
       <>
         <Header />
+        <img className={styles.leftImage} src={images.pageReviewsBg} />
         <div className={styles.wrapper}>
-          <ReactMarkdown source={store.getLn(messages.reviews)} />
+          <div className={styles.title}>{store.getLn(messages.title)}</div>
+          <Scrollbar
+            style={{ width: 800, height: 450 }}
+            minimalThumbSize={14}
+            maximalThumbSize={14}
+          >
+            <ReactMarkdown className={styles.text} source={store.getLn(messages.reviews)} />
+          </Scrollbar>
         </div>
+        <Footer className={styles.footer} />
       </>
     );
   }

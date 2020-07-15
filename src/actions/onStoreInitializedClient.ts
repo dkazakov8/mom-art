@@ -23,7 +23,7 @@ export function onStoreInitializedClient({ store }: ActionFirstParams) {
       window.addEventListener('load', function onLoad() {
         const currentRoute = toJS(store.router.currentRoute);
 
-        printMeasures({ currentRoute });
+        // printMeasures({ currentRoute });
       });
     });
 }

@@ -1,10 +1,9 @@
 import _ from 'lodash';
 import cn from 'classnames';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { icons } from 'assets/icons';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import styles from './Icon.scss';
 
@@ -15,12 +14,11 @@ interface IconProps {
   className?: string;
 }
 
-@observer
-export class Icon extends React.Component<IconProps> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Icon extends ConnectedComponent<IconProps> {
+  declare context: typeof ConnectedComponent['context'];
 
-  static glyphs: typeof icons;
+  static glyphs: typeof icons = _.mapValues(icons, (_value, key) => key);
 
   render() {
     const { glyph, className, ...props } = this.props;
@@ -37,5 +35,3 @@ export class Icon extends React.Component<IconProps> {
     );
   }
 }
-
-Icon.glyphs = _.mapValues(icons, (_value, key) => key);

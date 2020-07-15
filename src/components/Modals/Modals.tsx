@@ -1,17 +1,15 @@
 import cn from 'classnames';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { Icon } from 'components/Icon';
 import { ModalsCollection } from 'components/ModalsCollection';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import styles from './Modals.scss';
 
-@observer
-export class Modals extends React.Component {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Modals extends ConnectedComponent {
+  declare context: typeof ConnectedComponent['context'];
 
   handleRemoveModal = modal => () => {
     const { store } = this.context;

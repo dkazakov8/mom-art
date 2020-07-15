@@ -76,6 +76,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-markdown": "4.3.1",
+    "react-scrollbars-custom": "4.0.25",
     "server": "file:./server",
     "ts-interface-checker": "0.1.11"
   },

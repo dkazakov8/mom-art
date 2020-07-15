@@ -1,8 +1,7 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { RouteType } from 'models';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 interface LinkProps {
   route: RouteType;
@@ -10,10 +9,9 @@ interface LinkProps {
   className?: string;
 }
 
-@observer
-export class Link extends React.Component<LinkProps> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Link extends ConnectedComponent<LinkProps> {
+  declare context: typeof ConnectedComponent['context'];
 
   render() {
     const { store } = this.context;

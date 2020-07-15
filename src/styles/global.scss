@@ -28,14 +28,19 @@ body {
   font-family: "SF Pro Display", Tahoma, sans-serif;
   font-size: 18px;
   line-height: $line_height;
-  background: $W2;
+  background: url("../assets/images/body_bg.jpg") no-repeat;
+  background-size: cover;
   position: relative;
-  color: $W8;
+  color: var(--text);
   height: 100%;
   overflow-x: hidden;
+}
 
-  @media (max-width: 800px) {
-    font-size: 16px;
+:global {
+  #app {
+    background: var(--header-bg);
+    min-height: 100%;
+    transition: background-color 0.2s;
   }
 }
 
@@ -63,4 +68,26 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px $W2 inset !important;
   -webkit-text-fill-color: $W8 !important;
+}
+
+:global {
+  .ScrollbarsCustom-TrackY {
+    overflow: visible !important;
+    width: 2px !important;
+    background: var(--scroll-track-bg) !important;
+    transition: background-color 0.2s;
+  }
+
+  .ScrollbarsCustom-ThumbY {
+    background: var(--link-inactive) !important;
+    width: 14px !important;
+    padding: 5px;
+    margin-left: -6px;
+    border-radius: 100% !important;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: var(--link-active) !important;
+    }
+  }
 }

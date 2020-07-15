@@ -1,10 +1,9 @@
 import cn from 'classnames';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { routes } from 'routes';
 import { Link } from 'components/Link';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import styles from './Header.scss';
 import { messages } from './messages';
@@ -28,10 +27,9 @@ const menuArray = [
   },
 ];
 
-@observer
-export class Menu extends React.Component {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Menu extends ConnectedComponent {
+  declare context: typeof ConnectedComponent['context'];
 
   render() {
     const {

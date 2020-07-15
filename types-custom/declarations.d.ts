@@ -19,6 +19,11 @@ interface Console {
   js: (...args: any[]) => void;
 }
 
+declare module '*.scss' {
+  export const content: { [className: string]: string };
+  export default content;
+}
+
 declare module 'styles/themes.scss' {
   export const content: { [className: string]: { [customCssVariable: string]: string } };
   export default content;

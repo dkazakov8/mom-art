@@ -1,114 +1,112 @@
 @import "mixins.scss";
 
-$separator_size: 4px;
-
 .header {
-  .title {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  background: var(--header-bg);
+  padding: 0 60px;
+  height: 80px;
+  position: relative;
+  z-index: 2;
+  transition: background-color 0.2s;
+
+  .logo {
+    flex-grow: 0;
+    font-family: Liana;
     font-size: 30px;
-    line-height: 35px;
-    text-align: center;
-    padding: 50px 0;
-    font-weight: 300;
+    line-height: 30px;
+    user-select: none;
+
+    &.linkStyle {
+      color: var(--link-active);
+    }
   }
 
   .menu {
-    font-size: 16px;
-    line-height: 16px;
-    text-align: center;
-    padding-bottom: 30px;
+    flex-grow: 1;
+    display: flex;
+    flex-flow: row nowrap;
+    font-size: 18px;
+    line-height: 80px;
+    justify-content: center;
 
     .menuItem {
       position: relative;
-      display: inline-block;
-      vertical-align: top;
-      color: $W6;
-      transition: color 0.2s;
-      margin-left: 30px + $separator_size;
-      text-transform: uppercase;
+      color: var(--link-inactive);
+      text-transform: lowercase;
       user-select: none;
-      padding: 5px;
-
-      &:first-child {
-        margin-left: 0;
-
-        &:before {
-          display: none;
-        }
-      }
+      padding: 0 25px;
 
       &.active,
       &:hover {
-        color: $B_700;
+        color: var(--link-active);
 
         &.active {
           cursor: default;
         }
       }
-
-      &:before {
-        content: "";
-        display: block;
-        position: absolute;
-        z-index: 0;
-        top: 10px;
-        left: -15px - $separator_size;
-        width: $separator_size;
-        height: $separator_size;
-        border-radius: 50%;
-        background: $W6;
-      }
     }
   }
 
-  .topRightBlock {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-
-    .buttonsBlock {
-      @include inline-top;
-
-      margin-right: 10px;
-    }
-  }
-
-  .themeToggler,
-  .logout {
-    @include inline-top;
-
+  .themeSwither {
+    width: 30px;
+    height: 14px;
+    border-radius: 7px;
+    border: 1px solid var(--link-inactive);
     cursor: pointer;
-    padding: 3px;
-    color: $W6;
-    transition: color 0.2s;
-    font-size: 16px;
+    position: relative;
+    transition: border-color 0.2s;
+
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--link-inactive);
+      transition: background 0.2s, transform 0.2s ease-in-out;
+    }
 
     &:hover {
-      color: $W8;
+      border-color: var(--link-active);
+
+      &:after {
+        background: var(--link-active);
+      }
     }
 
     &.active {
-      cursor: default;
-      color: $Y_500;
+      &:after {
+        transform: translateX(30px - 12px);
+      }
     }
   }
 
-  @media (max-width: 600px) {
-    .title {
-      font-size: 24px;
-      line-height: 28px;
-      padding: 50px 0 30px 0;
+  .languageToggler,
+  .themeIcon,
+  .logoutIcon {
+    cursor: pointer;
+    color: var(--link-inactive);
+    transition: color 0.2s;
+    font-size: 18px;
+    line-height: 18px;
+    margin-left: 15px;
+
+    &:hover {
+      color: var(--link-active);
     }
 
-    .menu {
-      font-size: 14px;
+    &.languageToggler {
+      margin-left: 0;
+      margin-right: 40px;
+    }
 
-      .menuItem {
-        margin-left: 14px + $separator_size;
-
-        &:before {
-          left: -6px - $separator_size;
-        }
-      }
+    &.logoutIcon {
+      margin-left: 40px;
     }
   }
 }

@@ -10,6 +10,7 @@ export const icons = {
   langEn: require('./icons/lang_en.svg'),
   langRu: require('./icons/lang_ru.svg'),
   logout: require('./icons/logout.svg'),
+  sign: require('./icons/sign.svg'),
   themeDark: require('./icons/theme_dark.svg'),
   themeLight: require('./icons/theme_light.svg'),
 };

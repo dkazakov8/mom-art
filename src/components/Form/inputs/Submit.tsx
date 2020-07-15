@@ -1,15 +1,14 @@
 import cn from 'classnames';
 import _ from 'lodash';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { MessageObjectType } from 'common';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import styles from '../Form.scss';
 
 export interface SubmitProps {
-  label: MessageObjectType;
+  label: MessageObjectType | string;
   loadingByPath?: string;
 
   tabIndex?: number;
@@ -17,10 +16,9 @@ export interface SubmitProps {
   className?: string;
 }
 
-@observer
-export class Submit extends React.Component<SubmitProps> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Submit extends ConnectedComponent<SubmitProps> {
+  declare context: typeof ConnectedComponent['context'];
 
   get params() {
     const { store } = this.context;

@@ -1,10 +1,9 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { fieldValidators } from 'utils';
-import { Header } from 'components/Header';
 import { Form } from 'components/Form';
-import { StoreContext } from 'stores/StoreRoot';
+import { Header } from 'components/Header';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import styles from './EditLocalization.scss';
 import { messages } from './messages';
@@ -16,10 +15,9 @@ interface TranslationItemProps {
   translationName: string;
 }
 
-@observer
-class TranslationItem extends React.Component<TranslationItemProps> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+class TranslationItem extends ConnectedComponent<TranslationItemProps> {
+  declare context: typeof ConnectedComponent['context'];
 
   render() {
     const {
@@ -44,10 +42,9 @@ class TranslationItem extends React.Component<TranslationItemProps> {
   }
 }
 
-@observer
-export class EditLocalization extends React.Component {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class EditLocalization extends ConnectedComponent {
+  declare context: typeof ConnectedComponent['context'];
 
   UNSAFE_componentWillMount() {
     const { store } = this.context;

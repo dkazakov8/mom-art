@@ -1,9 +1,8 @@
 import _ from 'lodash';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { scrollToFirstElement, getNotValidFieldsIds } from 'utils';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import { Text } from './inputs/Text';
 import { Submit } from './inputs/Submit';
@@ -21,10 +20,9 @@ const inputsCollection = {
   Textarea,
 };
 
-@observer
-export class Form extends React.Component<FormProps> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class Form extends ConnectedComponent<FormProps> {
+  declare context: typeof ConnectedComponent['context'];
 
   static Input = inputsCollection;
   static getNotValidFieldsIds = getNotValidFieldsIds;

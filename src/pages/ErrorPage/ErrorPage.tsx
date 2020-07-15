@@ -1,9 +1,8 @@
 import cn from 'classnames';
 import React from 'react';
-import { observer } from 'mobx-react';
 
 import { Header } from 'components/Header';
-import { StoreContext } from 'stores/StoreRoot';
+import { ConnectedComponent } from 'components/ConnectedComponent';
 
 import styles from './ErrorPage.scss';
 import { messages } from './messages';
@@ -12,10 +11,9 @@ interface ErrorPageProps {
   errorNumber: number;
 }
 
-@observer
-export class ErrorPage extends React.Component<ErrorPageProps> {
-  declare context: React.ContextType<typeof StoreContext>;
-  static contextType = StoreContext;
+@ConnectedComponent.observer
+export class ErrorPage extends ConnectedComponent<ErrorPageProps> {
+  declare context: typeof ConnectedComponent['context'];
 
   UNSAFE_componentWillMount() {
     const { store } = this.context;
