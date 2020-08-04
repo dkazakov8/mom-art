@@ -58,7 +58,7 @@
     }
   },
   "dependencies": {
-    "@sentry/browser": "5.19.0",
+    "@sentry/browser": "5.20.1",
     "axios": "0.19.2",
     "better-npm-run": "0.1.1",
     "classnames": "2.2.6",
@@ -69,27 +69,27 @@
     "inferno-hydrate": "7.4.2",
     "inferno-mobx": "7.4.2",
     "inferno-server": "7.4.2",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "mobx": "5.15.4",
-    "mobx-react": "6.2.2",
+    "mobx-react": "6.2.5",
     "nodemon": "2.0.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-markdown": "4.3.1",
     "react-scrollbars-custom": "4.0.25",
     "server": "file:./server",
-    "ts-interface-checker": "0.1.11"
+    "ts-interface-checker": "0.1.12"
   },
   "devDependencies": {
-    "@babel/cli": "7.10.4",
-    "@babel/core": "7.10.4",
-    "@babel/node": "7.10.4",
+    "@babel/cli": "7.10.5",
+    "@babel/core": "7.11.0",
+    "@babel/node": "7.10.5",
     "eslint-custom": "file:./eslint-custom",
     "husky": "4.2.5",
     "lint-staged": "10.2.11",
     "ts-interface-builder": "0.2.2",
     "types-custom": "file:./types-custom",
-    "typescript": "3.9.6",
+    "typescript": "3.9.7",
     "webpack-custom": "file:./webpack-custom"
   }
 }

@@ -32,6 +32,7 @@ export class StoreUi {
     header: 0,
   };
   notifications: NotificationType[] = [];
+
   modals: TypeModals = [];
   get modalIsOpen() {
     return this.modals.length > 0;

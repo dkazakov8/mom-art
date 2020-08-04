@@ -6,7 +6,6 @@ export * from './createServer';
 export * from './deleteRecursive';
 export * from './handleApiError';
 export * from './hotReloadUrl';
-export * from './injectCSPProtection';
 export * from './isLoggedIn';
 export * from './readDirRecursive';
 export * from './s3';
